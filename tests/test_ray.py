@@ -3,11 +3,11 @@ from jaxgym.ray import Ray, RayMatrix
 
 def test_smoke():
     r1 = Ray(
-        x=0, y=0, z=0,
+        x=0, y=0,
         dx=0, dy=0,
     )
     r2 = Ray(
-        x=0, y=0, z=0,
+        x=0, y=0,
         dx=0.1, dy=0,
     )
     rays = RayMatrix.from_rays((r1, r2))

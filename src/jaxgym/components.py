@@ -48,7 +48,7 @@ class LinearComponent(Component):
         # Just have to make sure we are not in a step-wise function or sth like that...
         # TODO take some shots at this to try make a naughty function pass
         sample = Ray(
-            x=0., y=0., z=0., dx=0., dy=0.
+            x=0., y=0., dx=0., dy=0.
         )
         hess = hessian(unwrap(sample))
         if jnp.any(hess != 0.):
@@ -71,7 +71,7 @@ class MatrixComponent:
 
         # Any ray will do
         sample = Ray(
-            x=1., y=2., z=3., dx=4., dy=5.
+            x=1., y=2., dx=4., dy=5.
         )
         # Get the Jacobian which is the transfer matrix
         mat = jac(unwrap(sample))
@@ -100,9 +100,6 @@ class FreeSpace(LinearComponent):
         return ray.modify(
             x=ray.x + self.length * ray.dx,
             y=ray.y + self.length * ray.dy,
-            # The multiplication with "one"
-            # is important for differentiation to work
-            z=ray.z + self.length * ray._one,
         )
 
     def pathlength(self, ray: Ray) -> float:

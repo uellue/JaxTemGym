@@ -13,7 +13,6 @@ from . import (
 class Ray:
     x: float
     y: float
-    z: float
     dx: float
     dy: float
     # Important to also include here for differentiation to work
@@ -21,10 +20,10 @@ class Ray:
     # Don't set this as a user, has to be value 1!
     _one: float = 1.
 
-    def modify(self, x=None, y=None, z=None, dx=None, dy=None) -> "Ray":
+    def modify(self, x=None, y=None, dx=None, dy=None) -> "Ray":
         loc = locals()
         params = {}
-        for key in ('x', 'y', 'z', 'dx', 'dy'):
+        for key in ('x', 'y', 'dx', 'dy'):
             ll = loc.get(key, None)
             if ll is None:
                 ll = getattr(self, key)
@@ -38,7 +37,7 @@ class RayMatrix:
 
     @classmethod
     def from_rays(cls, rays: Collection[Ray]) -> "RayMatrix":
-        vecs = tuple(jnp.array((r.x, r.y, r.z, r.dx, r.dy, r._one)) for r in rays)
+        vecs = tuple(jnp.array((r.x, r.y, r.dx, r.dy, r._one)) for r in rays)
         return cls(matrix=jnp.stack(vecs, axis=0))
 
     def to_rays(self) -> Collection[Ray]:
