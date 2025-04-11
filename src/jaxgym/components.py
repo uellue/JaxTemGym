@@ -123,17 +123,6 @@ class Lens(LinearComponent):
 
 
 @jdc.pytree_dataclass
-class ThickLens(Lens):
-    thickness: float
-
-    def step(self, ray: Ray):
-        thin_ray = super().step(ray)
-        return thin_ray.modify(
-            z=thin_ray.z + self.thickness * thin_ray._one
-        )
-
-
-@jdc.pytree_dataclass
 class Shifter(LinearComponent):
     offset_x: float
     offset_y: float

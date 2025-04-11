@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 from jaxgym.components import (
     MatrixComponent,
     ScanGrid, Detector, DescanError,
-    Identity, FreeSpace, Lens, ThickLens, Shifter, Tilter,
+    Identity, FreeSpace, Lens, Shifter, Tilter,
     scan_descan_triplet,
 )
 from jaxgym.ray import Ray, RayMatrix, unwrap, ray_matrix
@@ -19,10 +19,10 @@ def test_identity():
     c.validate()
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     ref = c.step(sample)
@@ -39,20 +39,19 @@ def test_free_space():
     c.validate()
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     res = c.step(sample)
-    ref = sample.modify(z=3)
+    ref = sample
     assert_allclose(unwrap(ref), unwrap(res))
     assert_allclose(c.pathlength(sample), c.length)
 
     res_2 = c.step(sample_2)
     ref_2 = sample_2.modify(
-        z=sample_2.z + c.length,
         x=sample_2.x + sample_2.dx*c.length,
         y=sample_2.y + sample_2.dy*c.length,
     )
@@ -67,10 +66,10 @@ def test_lens_infinity():
     c.validate()
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     ref = c.step(sample)
@@ -90,7 +89,7 @@ def test_lens():
 
     # A ray through the center of a lens is not modified
     central = Ray(
-        x=0., y=0., z=0., dx=0.1, dy=0.3
+        x=0., y=0., dx=0.1, dy=0.3
     )
     central_res = c.step(central)
 
@@ -99,7 +98,7 @@ def test_lens():
 
     # A beam parallel to the optical axis passes through the focus point
     parallel = Ray(
-        x=1., y=2., z=3., dx=0., dy=0.
+        x=1., y=2., dx=0., dy=0.
     )
     parallel_res = c.step(parallel)
     foc = FreeSpace(length=focal_length)
@@ -107,38 +106,6 @@ def test_lens():
 
     assert_allclose(at_focus.x, 0)
     assert_allclose(at_focus.y, 0)
-    assert_allclose(at_focus.z, parallel.z + focal_length)
-    # TODO put a better test here and not just the formula from the code itself
-    assert_allclose(c.pathlength(parallel), -(parallel.x**2 + parallel.y**2) / (2 * focal_length))
-
-
-def test_thick():
-    focal_length = 23
-    thickness = 13
-    c = ThickLens(focal_length=focal_length, thickness=thickness)
-    c.validate()
-
-    # A ray through the center of a lens is not modified
-    central = Ray(
-        x=0., y=0., z=0., dx=0.1, dy=0.3
-    )
-    central_res = c.step(central)
-    central_ref = central.modify(z=central.z + c.thickness)
-
-    assert_allclose(unwrap(central_ref), unwrap(central_res))
-    assert_allclose(c.pathlength(central), 0)
-
-    # A beam parallel to the optical axis passes through the focus point
-    parallel = Ray(
-        x=1., y=2., z=3., dx=0., dy=0.
-    )
-    parallel_res = c.step(parallel)
-    foc = FreeSpace(length=focal_length)
-    at_focus = foc.step(parallel_res)
-
-    assert_allclose(at_focus.x, 0)
-    assert_allclose(at_focus.y, 0)
-    assert_allclose(at_focus.z, parallel.z + focal_length + c.thickness)
     # TODO put a better test here and not just the formula from the code itself
     assert_allclose(c.pathlength(parallel), -(parallel.x**2 + parallel.y**2) / (2 * focal_length))
 
@@ -148,10 +115,10 @@ def test_shifter():
     c.validate()
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     res = c.step(sample)
@@ -180,10 +147,10 @@ def test_tilter():
     c.validate()
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     res = c.step(sample)
@@ -213,10 +180,10 @@ def test_descan_triplet_tilt():
     )
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     res = tilt.step(descan.step(scan.step(sample)))
@@ -244,10 +211,10 @@ def test_descan_triplet_shift():
     )
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     res = tilt.step(descan.step(scan.step(sample)))
@@ -275,9 +242,6 @@ def test_descan_triplet_shift():
         Lens(focal_length=-23),
         Lens(focal_length=42),
         Lens(focal_length=np.inf),
-        ThickLens(focal_length=-23, thickness=13),
-        ThickLens(focal_length=42, thickness=23),
-        ThickLens(focal_length=np.inf, thickness=0),
         Shifter(offset_x=2, offset_y=3),
         Tilter(tilt_x=2, tilt_y=3),
     ]
@@ -287,10 +251,10 @@ def test_equivalence(component):
     print(type(component), "\n", mat.matrix)
 
     sample = Ray(
-        x=0., y=0., z=0., dx=0., dy=0.
+        x=0., y=0., dx=0., dy=0.
     )
     sample_2 = Ray(
-        x=1., y=2., z=3., dx=4., dy=5.
+        x=1., y=2., dx=4., dy=5.
     )
 
     ref = component.step(sample)

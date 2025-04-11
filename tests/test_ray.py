@@ -17,16 +17,14 @@ def test_smoke():
 
 def test_modify():
     r1 = Ray(
-        x=0., y=0., z=0.,
+        x=0., y=0.,
         dx=0., dy=0.,
-        pathlength=0.
     )
-    for key in ('x', 'y', 'z', 'dx', 'dy', 'pathlength'):
+    for key in ('x', 'y', 'dx', 'dy'):
         r2 = r1.modify(**{key: 23})
-        for key2 in ('x', 'y', 'z', 'dx', 'dy', 'pathlength'):
+        for key2 in ('x', 'y', 'dx', 'dy'):
             if key == key2:
                 ref = 23
             else:
                 ref = getattr(r1, key2)
             assert getattr(r2, key2) == ref
-

@@ -42,7 +42,7 @@ class RayMatrix:
 
     def to_rays(self) -> Collection[Ray]:
         res = tuple(
-            Ray(x=v[0], y=v[1], z=v[2], dx=v[3], dy=v[4], _one=v[5])
+            Ray(x=v[0], y=v[1], dx=v[2], dy=v[3], _one=v[4])
             for v in self.matrix
         )
         return res
